@@ -27,7 +27,7 @@ export const signUp = async (req, res, next) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const newUsers = await User.create(
+        const newUser = await User.create(
             [
                 {
                     name,
@@ -38,7 +38,7 @@ export const signUp = async (req, res, next) => {
             { session }
         );
 
-        const token = jwt.sign({ userId: newUsers[0]._id }, JWT_SECRET, {
+        const token = jwt.sign({ userId: newUser[0]._id }, JWT_SECRET, {
             expiresIn: JWT_EXPIRES_IN,
         });
 
@@ -51,7 +51,7 @@ export const signUp = async (req, res, next) => {
             message: 'User created successfully',
             data: {
                 token,
-                user: newUsers[0],
+                user: newUser[0],
             },
         });
     } catch (error) {
@@ -65,7 +65,7 @@ export const signUp = async (req, res, next) => {
 export const signIn = async (req, res, next) => {
     try {
         const { email, password } = req.body;
-        // Check if user exists
+
         const user = await User.findOne({ email });
 
         if (!user) {
@@ -75,13 +75,13 @@ export const signIn = async (req, res, next) => {
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
+
         if (!isPasswordValid) {
             const error = new Error('Invalid password');
             error.statusCode = 401;
             throw error;
         }
 
-        // Generate JWT token
         const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 
         res.status(200).json({
@@ -97,5 +97,16 @@ export const signIn = async (req, res, next) => {
     }
 };
 
-// eslint-disable-next-line no-unused-vars
-export const signOut = async (req, res, next) => {};
+export const signOut = async (req, res, next) => {
+    try {
+        // Clear the token cookie if you're using cookies
+        res.clearCookie('token');
+
+        res.status(200).json({
+            success: true,
+            message: 'User signed out successfully',
+        });
+    } catch (error) {
+        next(error);
+    }
+};

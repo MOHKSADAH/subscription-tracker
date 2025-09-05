@@ -3,6 +3,7 @@ import { ARCJET_KEY } from './env.js';
 
 const aj = arcjet({
     key: ARCJET_KEY,
+    characteristics: ['ip.src'],
 
     rules: [
         // Shield protects your app from common attacks e.g. SQL injection
@@ -10,7 +11,7 @@ const aj = arcjet({
         shield({ mode: 'LIVE' }),
 
         detectBot({
-            mode: 'DRY_RUN', // Logs only, doesn't block. Use "LIVE" for production
+            mode: 'LIVE', // Blocks requests. Use "DRY_RUN" to log only
 
             // Block all bots except the following
 
@@ -29,8 +30,6 @@ const aj = arcjet({
 
         tokenBucket({
             mode: 'LIVE',
-
-            characteristics: ['ip.src'],
 
             refillRate: 5, // Refill 5 tokens per interval
 
