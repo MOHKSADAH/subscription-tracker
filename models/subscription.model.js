@@ -48,12 +48,13 @@ const subscriptionSchema = new mongoose.Schema(
         },
         renewalDate: {
             type: Date,
-            required: true,
             validate: {
                 validator: function (value) {
+                    // Only validate if renewalDate is provided
+                    if (!value) return true;
                     return value > this.startDate;
                 },
-                message: 'Renewal date cannot be after the start date',
+                message: 'Renewal date cannot be before the start date',
             },
         },
         user: {

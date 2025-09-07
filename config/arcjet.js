@@ -11,7 +11,7 @@ const aj = arcjet({
         shield({ mode: 'LIVE' }),
 
         detectBot({
-            mode: 'LIVE', // Blocks requests. Use "DRY_RUN" to log only
+            mode: 'DRY_RUN', // Blocks requests. Use "DRY_RUN" to log only
 
             // Block all bots except the following
 
