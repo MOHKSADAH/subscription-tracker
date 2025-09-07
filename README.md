@@ -139,6 +139,10 @@ SubTracker features an intelligent reminder system that sends emails to users be
 -   On the day of renewal
 
 The system uses Upstash QStash for scheduling these reminders and automatically sends professionally designed HTML emails with subscription details.
+## EMAIL TEMPLATE
+
+<img width="350" height="750" alt="SUBTRACKER" src="https://github.com/user-attachments/assets/5941de60-8a83-4b38-9506-1b330306451d" />
+
 
 ## 🔐 Security Features
 
