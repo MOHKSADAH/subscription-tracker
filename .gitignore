@@ -60,3 +60,9 @@ typings/
 
 # next.js build output
 .next
+
+.claude
+claude.md
+.github
+CHANGES_SUMMARY.md
+IMPLEMENTATION.md
