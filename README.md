@@ -1,14 +1,10 @@
 # SubTracker - Subscription Management API
 
-SubTracker is a comprehensive backend A### Workflow Management
+A backend API for tracking recurring subscriptions with automated email reminders before renewals.
 
--   `POST /api/v1/workflows/subscription/reminder` - Trigger subscription reminder workflow
+## Features
 
-> **Note**: Endpoints marked with "(placeholder)" currently return a placeholder response and are not fully implemented. They are included in the API routes structure but need controller implementation.designed to help users track and manage their recurring subscriptions. It provides automated reminders for upcoming renewals through email notifications, helping users avoid unexpected charges and manage their subscription expenses efficiently.
-
-## 🌟 Features
-
--   **Authentication System**: Secure JWT-based authentication with login, register, and token refresh
+-   **Authentication System**: JWT-based authentication with login, register, and token refresh
 -   **Subscription Management**: CRUD operations for managing subscription details
 -   **Automated Reminders**: Time-based email notifications before subscription renewals
 -   **User Profiles**: User management with personalized preferences
@@ -16,7 +12,7 @@ SubTracker is a comprehensive backend A### Workflow Management
 -   **Currency Support**: Multi-currency support (SAR, USD, EUR)
 -   **Security**: Arcjet integration for API protection
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 -   **Runtime**: Node.js v22+
 -   **Framework**: Express.js v4
@@ -27,7 +23,48 @@ SubTracker is a comprehensive backend A### Workflow Management
 -   **Date Manipulation**: Day.js
 -   **Security**: Arcjet for rate limiting and bot protection
 
-## 📁 Project Structure
+## System Architecture
+
+```mermaid
+graph TB
+    subgraph Client
+        A[API Client/Frontend]
+    end
+
+    subgraph "SubTracker API"
+        B[Express.js Server]
+        C[Auth Middleware<br/>JWT Validation]
+        D[Arcjet Security<br/>Rate Limiting]
+        E[Controllers]
+        F[Mongoose Models]
+    end
+
+    subgraph "External Services"
+        G[(MongoDB)]
+        H[Upstash QStash<br/>Workflow Engine]
+        I[Nodemailer<br/>Email Service]
+    end
+
+    A -->|HTTP Requests| D
+    D -->|Security Check| B
+    B -->|Protected Routes| C
+    C -->|Validated| E
+    E -->|Query/Update| F
+    F -->|CRUD Operations| G
+    E -->|Schedule Reminders| H
+    H -->|Trigger Workflow| E
+    E -->|Send Email| I
+    I -->|Email Delivery| J[User's Inbox]
+
+    style B fill:#4CAF50
+    style G fill:#47A248
+    style H fill:#00E9A3
+    style I fill:#0099CC
+```
+
+[View detailed architecture diagrams →](docs/architecture.md)
+
+## Project Structure
 
 ```
 subscription-tracker/
@@ -61,7 +98,9 @@ subscription-tracker/
 └── package.json            # Project dependencies
 ```
 
-## 🚀 API Endpoints ( Some are still not implemented )
+## API Endpoints
+
+> Note: Endpoints marked with "(placeholder)" are not fully implemented yet.
 
 ### Authentication
 
@@ -91,46 +130,44 @@ subscription-tracker/
 
 -   `POST /api/v1/workflows` - Trigger workflow operations
 
-## 💾 Data Models
+## Data Models
 
-### User
+```mermaid
+erDiagram
+    USER ||--o{ SUBSCRIPTION : owns
 
-```javascript
-{
-  name: String,
-  email: String,
-  password: String,
-  preferences: {
-    reminderDays: [Number], // Days before renewal to send reminders
-    currency: String
-  },
-  createdAt: Date,
-  updatedAt: Date
-}
+    USER {
+        ObjectId _id PK
+        String name
+        String email UK
+        String password
+        Object preferences
+        DateTime createdAt
+        DateTime updatedAt
+    }
+
+    SUBSCRIPTION {
+        ObjectId _id PK
+        String name
+        Number price
+        String currency
+        String frequency
+        String category
+        String paymentMethod
+        String status
+        Date startDate
+        Date renewalDate
+        ObjectId user FK
+        DateTime createdAt
+        DateTime updatedAt
+    }
 ```
 
-### Subscription
+[View detailed schema documentation →](docs/database-schema.md)
 
-```javascript
-{
-  name: String,         // Service name (e.g., "Netflix")
-  price: Number,        // Subscription cost
-  currency: String,     // "SAR", "EUR", "USD"
-  frequency: String,    // "daily", "weekly", "monthly", "yearly"
-  category: String,     // "Food", "Entertainment", "Utilities", "Health"
-  paymentMethod: String, // Payment method used
-  status: String,       // "active", "inactive", "cancelled", "pending"
-  startDate: Date,      // When subscription began
-  renewalDate: Date,    // When next payment is due
-  user: ObjectId,       // Reference to user
-  createdAt: Date,
-  updatedAt: Date
-}
-```
+## Automated Reminder System
 
-## 📧 Automated Reminder System
-
-SubTracker features an intelligent reminder system that sends emails to users before their subscriptions renew:
+The reminder system sends emails to users before their subscriptions renew at the following intervals:
 
 -   7 days before renewal
 -   5 days before renewal
@@ -138,13 +175,12 @@ SubTracker features an intelligent reminder system that sends emails to users be
 -   1 day before renewal
 -   On the day of renewal
 
-The system uses Upstash QStash for scheduling these reminders and automatically sends professionally designed HTML emails with subscription details.
-## EMAIL TEMPLATE
+Reminders are scheduled using Upstash QStash and sent via Nodemailer with HTML email templates.
+## Email Template
 
 <img width="350" height="750" alt="SUBTRACKER" src="https://github.com/user-attachments/assets/5941de60-8a83-4b38-9506-1b330306451d" />
 
-
-## 🔐 Security Features
+## Security Features
 
 -   JWT-based authentication with refresh tokens
 -   Password hashing with bcryptjs
@@ -152,7 +188,7 @@ The system uses Upstash QStash for scheduling these reminders and automatically 
 -   Input validation and sanitization
 -   Proper error handling and logging
 
-## ⚙️ Environment Variables
+## Environment Variables
 
 ```
 # Server
@@ -184,7 +220,7 @@ EMAIL_FROM=noreply@subtracker.com
 ARCJET_KEY=your-arcjet-key
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 1. Clone the repository
 2. Install dependencies: `npm install`
@@ -192,10 +228,6 @@ ARCJET_KEY=your-arcjet-key
 4. Start the development server: `npm run dev`
 5. The API will be available at `http://localhost:5500`
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👨‍💻 Author
-
-SubTracker - Keeping your subscriptions under control
